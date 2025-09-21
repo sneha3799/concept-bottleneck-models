@@ -81,12 +81,29 @@ class VanillaCNN:
 
         wandb.finish(quiet=True)
 
+    def _preds_from_logits(self, logits: torch.Tensor):
+        """
+        Returns (preds, probs) where:
+        - binary: preds in {0,1}, probs is sigmoid probability (B,)
+        - multiclass: preds in {0..K-1}, probs is softmax (B,K)
+        """
+        if self.args.num_classes == 2:
+            probs = torch.sigmoid(logits.squeeze(1))      # (B,)
+            preds = (probs >= 0.5).long()                 # (B,)
+            return preds, probs
+        else:
+            probs = torch.softmax(logits, dim=1)          # (B, K)
+            preds = probs.argmax(dim=1)                   # (B,)
+            return preds, probs
+
+
     def train_step(self, epoch):
 
         self.model.train()
 
         metrics = defaultdict(list)
-
+        total_correct = 0
+        total_count = 0
         for k, batch in enumerate(tqdm(self.train_loader, desc=f"Epoch {epoch + 1}", position=0, leave=True)):
             batch_features, target_true = batch["features"].to(self.device), batch["labels"].to(self.device)
 
@@ -100,15 +117,26 @@ class VanillaCNN:
             target_loss.backward()
             self.optimizer.step()  # perform an update
 
+            preds, _ = self._preds_from_logits(target_pred_logits)
+            if self.args.num_classes == 2:
+                labels = target_true.long()
+            else:
+                labels = target_true.long()
+            total_correct += (preds == labels).sum().item()
+            total_count   += labels.numel()
+
+
             # Store predictions
             metrics["target_loss"].append(target_loss.item())
 
         metrics_mean = {k: sum(v) / len(v) for k, v in metrics.items() if len(v) > 0}
+        acc = total_correct / max(1, total_count)
 
         # --- build log dict with dataset info ---
         log_payload = {
             "epoch": epoch + 1,
             **{f"train/{k}": v for k, v in metrics_mean.items()},
+            "train/acc": acc
         }
         wandb.log(log_payload)
 
@@ -116,6 +144,8 @@ class VanillaCNN:
 
         self.model.eval()
         metrics = defaultdict(list)
+        total_correct = 0
+        total_count = 0
         with torch.no_grad():
             for k, batch in enumerate(tqdm(loader, desc=f"Epoch {epoch}", position=0, leave=True)):
                 
@@ -123,23 +153,33 @@ class VanillaCNN:
 
                 target_pred_logits = self.model(batch_features)
                 target_loss = self.get_loss(target_pred_logits, target_true)
+                
+                preds, _ = self._preds_from_logits(target_pred_logits)
+                if self.args.num_classes == 2:
+                    labels = target_true.long()
+                else:
+                    labels = target_true.long()
+                total_correct += (preds == labels).sum().item()
+                total_count   += labels.numel()
 
                 # Store predictions
                 metrics["target_loss"].append(target_loss.item())
 
         metrics_mean = {k: sum(v) / len(v) for k, v in metrics.items() if len(v) > 0}
-
+        acc = total_correct / max(1, total_count)
         if test:
             # --- build log dict with dataset info ---
             log_payload = {
                 "epoch": epoch + 1,
                 **{f"test/{k}": v for k, v in metrics_mean.items()},
+                "test/acc": acc,
             }
         else:
             # --- build log dict with dataset info ---
             log_payload = {
                 "epoch": epoch + 1,
                 **{f"validation/{k}": v for k, v in metrics_mean.items()},
+                "validation/acc": acc,
             }
 
         wandb.log(log_payload)
