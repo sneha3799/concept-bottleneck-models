@@ -74,7 +74,7 @@ if __name__ == "__main__":
     parser.add_argument("--model_directory", type=str, default="./pretrained_networks/", help="Directory of pretrained models")
     parser.add_argument("--head_arch", type=str, default="linear", choices=["linear", "nonlinear"], help="Classifier head architecture")
     parser.add_argument("--alpha", type=float, default=1.0, help="Weight of concept loss in joint training")
-    parser.add_argument("--encoder_arch", type=str, default="resnet18", choices=["resnet18", "simple_CNN", "FCNN"], help="Encoder backbone architecture")
+    parser.add_argument("--encoder_arch", type=str, default="simple_CNN", choices=["resnet18", "simple_CNN"], help="Encoder backbone architecture")
 
     # Training parameters
     parser.add_argument("--training_mode", type=str, default="joint", choices=["joint", "sequential", "independent"], help="Optimization method")
