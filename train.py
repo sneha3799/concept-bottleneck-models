@@ -55,7 +55,7 @@ if __name__ == "__main__":
     parser.add_argument("--save_dir", type=str, default="./cbm_train", help="Name of the directory to save the models")
     parser.add_argument("--seed", type=int, default=0, help="seed for training")
     parser.add_argument("--num_workers", type=int, default=1, help="Number of workers to use for data loading")
-    parser.add_argument("--save_model", type=bool, default=False, help="Whether to save the model")
+    parser.add_argument("--save_model", type=bool, default=True, help="Whether to save the model")
     parser.add_argument("--train_only", type=bool, default=False, help="Whether to train the model only and exit before performing interventions")
     parser.add_argument("--model", type=str, default="VanillaCNN", help="Which model to train CBM/Vanilla CNN")
 

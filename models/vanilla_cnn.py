@@ -69,9 +69,13 @@ class VanillaCNN:
             self.train_step(epoch)
             lr_scheduler.step()
 
+            if self.args.save_model and epoch % 1000 == 0:
+                torch.save(self.model.state_dict(), join(self.args.save_dir, "model.pth"))
+                print("SAVING THE MODEL !!!", flush=True)
+
         self.model.apply(freeze_module)
         if self.args.save_model:
-            torch.save(self.model.state_dict(), join("./", "model.pth"))
+            torch.save(self.model.state_dict(), join(self.args.save_dir, "model.pth"))
             print("\nTRAINING FINISHED, MODEL SAVED!", flush=True)
         else:
             print("\nTRAINING FINISHED", flush=True)
