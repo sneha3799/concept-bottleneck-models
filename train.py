@@ -57,7 +57,7 @@ if __name__ == "__main__":
     parser.add_argument("--num_workers", type=int, default=1, help="Number of workers to use for data loading")
     parser.add_argument("--save_model", type=bool, default=True, help="Whether to save the model")
     parser.add_argument("--train_only", type=bool, default=False, help="Whether to train the model only and exit before performing interventions")
-    parser.add_argument("--model", type=str, default="VanillaCNN", help="Which model to train CBM/Vanilla CNN")
+    parser.add_argument("--model", type=str, default="CBM", help="Which model to train CBM/Vanilla CNN")
 
     # WandB parameters
     parser.add_argument("--project", type=str, default="CBM", help="Name of the wandb project")
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     parser.add_argument("--model_directory", type=str, default="./pretrained_networks/", help="Directory of pretrained models")
     parser.add_argument("--head_arch", type=str, default="linear", choices=["linear", "nonlinear"], help="Classifier head architecture")
     parser.add_argument("--alpha", type=float, default=1.0, help="Weight of concept loss in joint training")
-    parser.add_argument("--encoder_arch", type=str, default="simple_CNN", choices=["resnet18", "simple_CNN"], help="Encoder backbone architecture")
+    parser.add_argument("--encoder_arch", type=str, default="resnet18", choices=["resnet18", "simple_CNN"], help="Encoder backbone architecture")
 
     # Training parameters
     parser.add_argument("--training_mode", type=str, default="joint", choices=["joint", "sequential", "independent"], help="Optimization method")
@@ -88,9 +88,9 @@ if __name__ == "__main__":
     parser.add_argument("--weight_decay", type=float, default=0.0, help="Weight decay for optimizer")
     parser.add_argument("--train_batch_size", type=int, default=64, help="Batch size for training set")
     parser.add_argument("--val_batch_size", type=int, default=64, help="Batch size for validation/test sets")
-    parser.add_argument("--j_epochs", type=int, default=300, help="Epochs for joint training")
-    parser.add_argument("--c_epochs", type=int, default=200, help="Epochs for first stage training (sequential & independent)")
-    parser.add_argument("--t_epochs", type=int, default=100, help="Epochs for second stage training (sequential & independent)")
+    parser.add_argument("--j_epochs", type=int, default=30000, help="Epochs for joint training")
+    parser.add_argument("--c_epochs", type=int, default=20000, help="Epochs for first stage training (sequential & independent)")
+    parser.add_argument("--t_epochs", type=int, default=10000, help="Epochs for second stage training (sequential & independent)")
     parser.add_argument("--reduction", type=str, default="mean", help="")
 
     args = parser.parse_args()

@@ -69,7 +69,7 @@ class VanillaCNN:
             self.train_step(epoch)
             lr_scheduler.step()
 
-            if self.args.save_model and epoch % 1000 == 0:
+            if self.args.save_model and epoch % 20 == 0:
                 torch.save(self.model.state_dict(), join(self.args.save_dir, "model.pth"))
                 print("SAVING THE MODEL !!!", flush=True)
 
