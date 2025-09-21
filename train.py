@@ -7,7 +7,7 @@ from pathlib import Path
 
 import torch
 import wandb
-from models.cbm import CBM
+from models import CBM, VanillaCNN
 from utils.data_utils import get_data
 
 def main(args):
@@ -41,6 +41,8 @@ def main(args):
 
     if args.model == "CBM":
         algorithm = CBM(args, train_loader, val_loader, test_loader, device)
+    else:
+        algorithm = VanillaCNN(args, train_loader, val_loader, test_loader, device)
     
     algorithm.run()
 
@@ -55,11 +57,11 @@ if __name__ == "__main__":
     parser.add_argument("--num_workers", type=int, default=1, help="Number of workers to use for data loading")
     parser.add_argument("--save_model", type=bool, default=False, help="Whether to save the model")
     parser.add_argument("--train_only", type=bool, default=False, help="Whether to train the model only and exit before performing interventions")
-    parser.add_argument("--model", type=str, default="CBM", help="Which model to train CBM/Vanilla CNN")
+    parser.add_argument("--model", type=str, default="VanillaCNN", help="Which model to train CBM/Vanilla CNN")
 
     # WandB parameters
     parser.add_argument("--project", type=str, default="CBM", help="Name of the wandb project")
-    parser.add_argument("--mode", type=str, default="disabled", help="Whether to log to wandb")
+    parser.add_argument("--mode", type=str, default="online", help="Whether to log to wandb")
     parser.add_argument("--entity", type=str, default="", help="WandB entity")
     parser.add_argument("--tag", type=str, default="baseline", help="Model's tag for wandb logging")
 
