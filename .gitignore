@@ -209,4 +209,3 @@ __marimo__/
 data_cache/
 datasets/CUB/
 cbm_train/
-wandb/
